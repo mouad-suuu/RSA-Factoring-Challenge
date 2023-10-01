@@ -1,1 +1,49 @@
-{"payload":{"allShortcutsEnabled":false,"fileTree":{"":{"items":[{"name":"images","path":"images","contentType":"directory"},{"name":"tests","path":"tests","contentType":"directory"},{"name":"README.md","path":"README.md","contentType":"file"},{"name":"factor.c","path":"factor.c","contentType":"file"},{"name":"factor.h","path":"factor.h","contentType":"file"},{"name":"factorize.c","path":"factorize.c","contentType":"file"},{"name":"factors","path":"factors","contentType":"file"},{"name":"rsa","path":"rsa","contentType":"file"},{"name":"rsa.c","path":"rsa.c","contentType":"file"}],"totalCount":9}},"fileTreeProcessingTime":2.6385470000000004,"foldersToFetch":[],"reducedMotionEnabled":null,"repo":{"id":538275247,"defaultBranch":"main","name":"RSA-Factoring-Challenge","ownerLogin":"daveeazi","currentUserCanPush":false,"isFork":false,"isEmpty":false,"createdAt":"2022-09-19T00:07:58.000Z","ownerAvatar":"https://avatars.githubusercontent.com/u/101644223?v=4","public":true,"private":false,"isOrgOwned":false},"symbolsExpanded":false,"treeExpanded":true,"refInfo":{"name":"main","listCacheKey":"v0:1663546079.371753","canEdit":false,"refType":"branch","currentOid":"d232637b741ae6fe4b1ccdca2704afb5a830a7d3"},"path":"factors","currentUser":null,"blob":{"rawLines":null,"stylingDirectives":null,"csv":null,"csvError":null,"dependabotInfo":{"showConfigurationBanner":false,"configFilePath":null,"networkDependabotPath":"/daveeazi/RSA-Factoring-Challenge/network/updates","dismissConfigurationNoticePath":"/settings/dismiss-notice/dependabot_configuration_notice","configurationNoticeDismissed":null,"repoAlertsPath":"/daveeazi/RSA-Factoring-Challenge/security/dependabot","repoSecurityAndAnalysisPath":"/daveeazi/RSA-Factoring-Challenge/settings/security_analysis","repoOwnerIsOrg":false,"currentUserCanAdminRepo":false},"displayName":"factors","displayUrl":"https://github.com/daveeazi/RSA-Factoring-Challenge/blob/main/factors?raw=true","headerInfo":{"blobSize":"16.7 KB","deleteInfo":{"deleteTooltip":"You must be signed in to make or propose changes"},"editInfo":{"editTooltip":"You must be signed in to make or propose changes"},"ghDesktopPath":"https://desktop.github.com","gitLfsPath":null,"onBranch":true,"shortPath":"da52b6a","siteNavLoginPath":"/login?return_to=https%3A%2F%2Fgithub.com%2Fdaveeazi%2FRSA-Factoring-Challenge%2Fblob%2Fmain%2Ffactors","isCSV":false,"isRichtext":false,"toc":null,"lineInfo":{"truncatedLoc":null,"truncatedSloc":null},"mode":"file"},"image":false,"isCodeownersFile":null,"isPlain":false,"isValidLegacyIssueTemplate":false,"issueTemplateHelpUrl":"https://docs.github.com/articles/about-issue-and-pull-request-templates","issueTemplate":null,"discussionTemplate":null,"language":null,"languageID":null,"large":false,"loggedIn":false,"newDiscussionPath":"/daveeazi/RSA-Factoring-Challenge/discussions/new","newIssuePath":"/daveeazi/RSA-Factoring-Challenge/issues/new","planSupportInfo":{"repoIsFork":null,"repoOwnedByCurrentUser":null,"requestFullPath":"/daveeazi/RSA-Factoring-Challenge/blob/main/factors","showFreeOrgGatedFeatureMessage":null,"showPlanSupportBanner":null,"upgradeDataAttributes":null,"upgradePath":null},"publishBannersInfo":{"dismissActionNoticePath":"/settings/dismiss-notice/publish_action_from_dockerfile","dismissStackNoticePath":"/settings/dismiss-notice/publish_stack_from_file","releasePath":"/daveeazi/RSA-Factoring-Challenge/releases/new?marketplace=true","showPublishActionBanner":false,"showPublishStackBanner":false},"renderImageOrRaw":true,"richText":null,"renderedFileInfo":null,"shortPath":null,"tabSize":8,"topBannersInfo":{"overridingGlobalFundingFile":false,"globalPreferredFundingPath":null,"repoOwner":"daveeazi","repoName":"RSA-Factoring-Challenge","showInvalidCitationWarning":false,"citationHelpUrl":"https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-citation-files","showDependabotConfigurationBanner":false,"actionsOnboardingTip":null},"truncated":false,"viewable":false,"workflowRedirectUrl":null,"symbols":null},"copilotInfo":null,"csrf_tokens":{"/daveeazi/RSA-Factoring-Challenge/branches":{"post":"bxuvUR_lkVUVpYutO0nrPqAtvpTC_q_3RoeDpPpSdWlNEU_MY6ci39TepYnXoks2fkcZ_vBf-Vqp2whAD_-27g"},"/repos/preferences":{"post":"C5y0FXd5ew0w85gI-stuESpURw903y_MdC_mZYU9Gd2dUObA2I6fbi0LuOuePXvHJ_9eOj7CJJeSqCAg98v6LA"}}},"title":"RSA-Factoring-Challenge/factors at main · daveeazi/RSA-Factoring-Challenge"}
+#!/usr/bin/env bash
+# is a factors challenge
+
+check_factor()
+{
+	if [ $# -ne 3 ];
+        then
+                args=("$@")
+                count=0
+                num2=1
+                for a in ${args[*]};
+                do
+                        if [ $count -gt 1 ];
+                        then
+                                num2=$(echo $a*$num2 | bc)
+                        fi
+                        count=$((count + 1))
+                done
+        else
+                num2=$3
+        fi
+
+        num1=$2
+        num=$(echo "$1" | tr ':' '=')
+
+        result=$(echo "if($num2 > $num1) 1 else 0" | bc)
+	        if ((result == 1)); then
+		        numcp=$num1
+		        num1=$num2
+		        num2=$numcp
+                fi
+
+        echo "$num$num1*$num2"
+}
+
+if [ $# -ne 1 ]
+then
+        echo 'Usage: factors <file>'
+        exit 1
+else
+
+        while read i
+        do
+
+                result=$(factor "$i")
+                check_factor $result
+
+        done < "$1"
+fi
