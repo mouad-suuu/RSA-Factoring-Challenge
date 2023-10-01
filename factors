@@ -1,49 +1,36 @@
-#!/usr/bin/env bash
-# is a factors challenge
+#!/usr/bin/python3
 
-check_factor()
-{
-        if [ $# -ne 3 ];
-        then
-                args=("$@")
-                count=0
-                num2=1
-                for a in ${args[*]};
-                do
-                        if [ $count -gt 1 ];
-                        then
-                                num2=$(echo $a*$num2 | bc)
-                        fi
-                        count=$((count + 1))
-                done
-        else
-                num2=$3
-        fi
+import sys
+import subprocess
 
-        num1=$2
-        num=$(echo "$1" | tr ':' '=')
+def factor_number(number):
+    try:
+        factors = subprocess.check_output(["factor", str(number)], universal_newlines=True)
+        factors = factors.strip().split(": ")[1].split()
+        factors = [int(factor) for factor in factors]
+        return factors
+    except subprocess.CalledProcessError:
+        return []
 
-        result=$(echo "if($num2 > $num1) 1 else 0" | bc)
-                if ((result == 1)); then
-                        numcp=$num1
-                        num1=$num2
-                        num2=$numcp
-                fi
+def main(file_path):
+    try:
+        with open(file_path, "r") as file:
+            for line in file:
+                number = int(line.strip())
+                factors = factor_number(number)
+                if not factors:
+                    print(f"Could not factor {number}")
+                else:
+                    factors.sort()
+                    print(f"{number}={'*'.join(map(str, factors))}")
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
 
-        echo "$num$num1*$num2"
-}
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 factors.py <file>")
+        sys.exit(1)
 
-if [ $# -ne 1 ]
-then
-        echo 'Usage: factors <file>'
-        exit 1
-else
+    file_path = sys.argv[1]
+    main(file_path)
 
-        while read i
-        do
-
-                result=$(factor "$i")
-                check_factor $result
-
-        done < "$1"
-fi
