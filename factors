@@ -1,28 +1,32 @@
+#!/usr/bin/python3
 import sys
 
-def factorize(number):
-    factors = []
+''' Function to factorize a number into pairs of factors and print to stdout'''
+
+
+def rsa(number):
     for i in range(2, number // 2 + 1):
-        while number % i == 0:
-            factors.append(i)
-            number //= i
-    if number > 1:
-        factors.append(number)
-    return factors
+        if number % i == 0:
+            print("{}={}*{}".format(number, number // i, i))
+            break
+
 
 def main(input_file):
-    with open(input_file, 'r') as file:
-        for line in file:
-            number = int(line.strip())
-            factors = factorize(number)
-            factors_str = '*'.join(map(str, factors))
-            print(f"{number}={factors_str}")
+    try:
+        with open(input_file, 'r') as infile:
+            for line in infile:
+                number = int(line.strip())
+
+                rsa(number)
+    except FileNotFoundError:
+        print("Input file not found.")
+    except Exception as e:
+        print("An error occurred: {}".format(str(e)))
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: factors <file>")
-        sys.exit(1)
-    
-    input_file = sys.argv[1]
-    main(input_file)
-
+        print("Usage: python factors <input_file>")
+    else:
+        input_file = sys.argv[1]
+        main(input_file)
